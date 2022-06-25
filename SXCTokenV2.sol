@@ -497,9 +497,9 @@ return allowed[_owner][_spender];
 }
 
 contract SXCToken is StandardErc20Token , FreezableTokenAccount{
-string private  name="Test SquadX Token";
-string private  symbol="TSXC";
-string private  version="1.0";
+string private  name="SquadX Token";
+string private  symbol="SXC";
+string private  version="2.0";
 uint256 private  decimals=18;
 uint256 private totalSupply =10000000 * 10**uint(decimals);
 
