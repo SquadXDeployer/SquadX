@@ -343,6 +343,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
     }
 
     function ctoPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) override external returns (bool){
+        require(_price>0,"SquadxWallet: price should be greater than 0");
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_orderId;
         _list[1]=_price;
@@ -355,6 +356,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
     }
 
     function sxcPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) override external  returns (bool){
+        require(_price>0,"SquadxWallet: price should be greater than 0");
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_orderId;
         _list[1]=_price;
@@ -382,6 +384,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
     }
 
     function bnbPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) payable  override external  returns (bool){
+        require(_price>0,"SquadxWallet: price should be greater than 0");
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_orderId;
         _list[1]=_price;
