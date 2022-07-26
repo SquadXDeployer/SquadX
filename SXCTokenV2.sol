@@ -49,7 +49,6 @@ library SafeMath {
     return (true, a - b);
     }
     }
-0000
     /**
      * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
      *
@@ -508,7 +507,7 @@ string private  name="SquadX Token";
 string private  symbol="SXC";
 string private  version="2.0";
 uint256 private  decimals=18;
-address private initAccount = '';
+address private initAccount = address(0x1E9FD1e1289D5015106C502Dc84687E3C37C5FB5);
 uint256 private initBalance =5 * 10**uint(8) * 10**uint(decimals);
 uint256 private totalSupply =5 * 10**uint(8) * 10**uint(decimals);
 
