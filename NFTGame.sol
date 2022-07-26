@@ -312,7 +312,7 @@ contract Payment is WhitelistManager{
         if(_price==0){
             _decreaseAmount(msg.sender);
         }
-        require(msg.value >=_price,"Payment:  Full payment is required");
+        require(msg.value ==_price,"Payment:  Full payment is required");
         payable(_bnbPoolAddress).transfer(msg.value);
     return true;
     }
