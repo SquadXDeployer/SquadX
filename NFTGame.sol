@@ -56,7 +56,7 @@ contract Sign {
     }
 
     function _splitSignature(bytes memory sig)   internal pure  returns ( uint8, bytes32, bytes32){
-        require(sig.length == 65);
+        require(sig.length == 65,"Sign: Length must be 65");
 
         bytes32 r;
         bytes32 s;
@@ -261,7 +261,7 @@ contract Payment is WhitelistManager{
 
     function _bnbPayment(uint256 _price) internal returns (bool){
         if(_price==0){
-            require(_decreaseAmount(msg.sender));
+            _decreaseAmount(msg.sender);
         }
         require(msg.value >=_price,"Payment:  Full payment is required");
         payable(_bnbPoolAddress).transfer(msg.value);
