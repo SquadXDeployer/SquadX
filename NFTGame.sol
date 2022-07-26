@@ -233,11 +233,11 @@ contract   WhitelistManager{
         }
     }
 
-    function amountOf(address owner) view public returns(uint256 amount) {
+    function amountOf(address owner) view public returns(uint256) {
         return whitelist[owner];
     }
 
-    function _decreaseAmount(address owner) internal returns(bool succeed){
+    function _decreaseAmount(address owner) internal returns(bool){
         require(amountOf(owner)>0,"WhitelistManager: balance is not enough");
         whitelist[owner]=whitelist[owner] - 1;
         return true;
