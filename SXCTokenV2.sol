@@ -295,6 +295,11 @@ address indexed previousOwner,
 address indexed newOwner
 );
 
+    event TransferERC20Token(
+        address indexed tokenAddress,
+        uint256 amount
+    );
+
 /**
  * @dev Initializes the contract setting the deployer as the initial owner.
  */
@@ -345,7 +350,9 @@ _owner = newOwner;
 }
 
 function transferERC20Token(address tokenAddress, uint _value) public virtual onlyOwner returns (bool) {
-return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
+        require(tokenAddress != address(0),"Ownable: tokenAddress is the zero address");
+        emit TransferERC20Token(tokenAddress,_value);
+        return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
 }
 
 }
