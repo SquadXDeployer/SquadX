@@ -501,6 +501,8 @@ string private  name="SquadX Token";
 string private  symbol="SXC";
 string private  version="2.0";
 uint256 private  decimals=18;
+address private initAccount = '';
+uint256 private initBalance =500000000 * 10**uint(decimals);
 uint256 private totalSupply =500000000 * 10**uint(decimals);
 
 event Flush(address indexed _owner,uint256 _value);
@@ -524,6 +526,7 @@ function flush()  external returns (bool sueeccd){
 }
 
  function transferWithFreeze(address _to, uint256 _value,uint256 _unfreezeTime) external returns (bool succeed){
+    require(_to!=address(0),"ERC20: Invalid address.");
     require(balances[_msgSender()] >= _value,"ERC20: balance is not enough");
     require(_value>0,"ERC20: value must be greater than 0");
     bool subOk;
@@ -549,7 +552,7 @@ function balanceOf(address _owner) external override  view returns (uint256 bala
 return balances[_owner] + freezeBalanceOf(_owner);
 }
 
-constructor(address initAccount) StandardErc20Token(name,symbol,totalSupply,decimals) {
-    balances[initAccount] = totalSupply;
+constructor() StandardErc20Token(name,symbol,totalSupply,decimals) {
+    balances[initAccount] = initBalance;
 }
 }
