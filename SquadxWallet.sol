@@ -293,29 +293,34 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         return _BNBPoolAddress;
     }
 
-    function setCTOTokenPoolAddressToBlackHole() external override onlyOwner {
+    function setCTOTokenPoolAddressToBlackHole() external override onlyOwner {         
          _CTOTokenPoolAddress=address(0);
     }
 
     function setCTOTokenAddress(address _address) external override onlyOwner {
+         require(_address!=address(0),"SquadxWallet: Invalid address.");
          _CTOTokenAddress=_address;
          emit SetCTOTokenAddress(_address);
     }
 
     function setSXCTokenAddress(address _address) external override onlyOwner {
+         require(_address!=address(0),"SquadxWallet: Invalid address.");
          _SXCTokenAddress=_address;
          emit SetSXCTokenAddress(_address);
     }
 
     function setCTOTokenPoolAddress(address CTOTokenPoolAddress_)external override onlyOwner {
+        require(CTOTokenPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
         _CTOTokenPoolAddress=CTOTokenPoolAddress_;
     }
 
     function setSXCTokenPoolAddress(address SXCTokenPoolAddress_)external override onlyOwner  {
+        require(SXCTokenPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
         _SXCTokenPoolAddress=SXCTokenPoolAddress_;
     }
 
     function setBNBPoolAddress(address BNBPoolAddress_)external override  onlyOwner {
+        require(BNBPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
         _BNBPoolAddress=BNBPoolAddress_;
     }
 
@@ -417,6 +422,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         WithdrawItem  []  storage  _items = _order.items;
         for(uint256 i = 0; i < _users.length; i++){
             address _user = _users[i];
+            require(_user!=address(0),"SquadxWallet: Invalid address.");
             uint256 _amount = _amounts[i];
             IERC20TokenInterface(_tokenAddress).transferFrom(_tokenPoolAddress,_user,_amount);
             WithdrawItem memory item = WithdrawItem({
@@ -435,6 +441,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         WithdrawItem  []  storage  _items = order.items;
         for(uint256 i = 0; i < _users.length; i++){
             address _user = _users[i];
+            require(_user!=address(0),"SquadxWallet: Invalid address.");
             uint256 _amount = _amounts[i];
             payable(_user).transfer(_amount);
             WithdrawItem memory item = WithdrawItem({
@@ -485,6 +492,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
     }
 
     function setSignAddress(address _signAddress) public onlyOwner{
+       require(_signAddress!=address(0),"SquadxWallet: Invalid address.");
        _setSignAddress(_signAddress);
     }
 
@@ -496,6 +504,12 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
     receive () payable external {}
 
     constructor(address ctoTokenAddress_,address sxcTokenAddress_,address ctoTokenPoolAddress_,address sxcTokenPoolAddress_,address bnbPoolAddress_,bool signEnable_,address signAddress_,uint256 expireTime_)  {
+        require(sxcTokenAddress_!=address(0),"SquadxWallet: Invalid address.");
+        require(ctoTokenPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
+        require(sxcTokenPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
+        require(bnbPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
+        require(signAddress_!=address(0),"SquadxWallet: Invalid address.");
+        
         _CTOTokenAddress= ctoTokenAddress_;
         _SXCTokenAddress = sxcTokenAddress_;
         _CTOTokenPoolAddress = ctoTokenPoolAddress_;
