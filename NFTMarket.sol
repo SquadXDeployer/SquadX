@@ -385,6 +385,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     address private nftTokenPoolAddress;
 
     function list(address _nftTokenAddress,uint256 _nftTokenId ,uint256 _priceInWei,uint256  _logId,string memory _remark,uint256 _nonce,bytes memory _sign) override whenRunning external returns(bool){
+        require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         uint256 [] memory _list = new uint256[](4);
         _list[0]=_logId;
         _list[1]=_nftTokenId;     
@@ -427,6 +428,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     }
 
     function remove(address _nftTokenAddress,uint256 _nftTokenId,uint256 _logId,string memory _remark,uint256 _nonce,bytes memory _sign) override external returns(bool){
+        require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_logId;
         _list[1]=_nftTokenId;     
@@ -460,6 +462,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     }
 
     function purchase(address _nftTokenAddress,uint256 _nftTokenId,uint256 _orderId,string memory _remark,uint256 _nonce,bytes memory _sign) payable whenRunning override external returns(bool){
+        require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_orderId;
         _list[1]=_nftTokenId;     
@@ -503,6 +506,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     }
 
     function buyItems(uint256 _orderId,address _seller,uint256 _itemId,uint256 _priceInWei,string memory _remark,uint256 _nonce,bytes memory _sign) payable override whenRunning external returns(bool){
+        require(_seller!=address(0),"NFTMarket: Invalid address.");
         uint256 [] memory _list = new uint256[](4);
         _list[0]=_orderId;
         _list[1]=_itemId;
@@ -541,6 +545,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     }
 
     function setFeePoolAddress(address _feePoolAddress) public onlyOwner {
+        require(_feePoolAddress!=address(0),"NFTMarket: Invalid address.");
         _setFeePoolAddress(_feePoolAddress);
     }
 
@@ -549,6 +554,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     }
 
     function setSignAddress(address _signAddress) public onlyOwner{
+        require(_signAddress!=address(0),"NFTMarket: Invalid address.");
        _setSignAddress(_signAddress);
     }
 
@@ -557,10 +563,15 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     }
 
     function setNftHolder(address _nftHolder) public onlyOwner{
+       require(_nftHolder!=address(0),"NFTMarket: Invalid address.");
        _setNftHolder(_nftHolder);
     }
 
     constructor(uint256 _feeRate,address _feePoolAddress,address _nftTokenPoolAddress,bool signEnable_,address signAddress_,uint256 expireTime_)  {
+         require(_feePoolAddress!=address(0),"NFTMarket: Invalid address.");
+          require(_nftTokenPoolAddress!=address(0),"NFTMarket: Invalid address.");
+           require(signAddress_!=address(0),"NFTMarket: Invalid address.");
+       
         _setFeeRate(_feeRate);
         _setFeePoolAddress(_feePoolAddress);
         _setNftHolder(_nftTokenPoolAddress);
