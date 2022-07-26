@@ -127,6 +127,11 @@ abstract contract Ownable is Context {
         address indexed previousOwner,
         address indexed newOwner
     );
+    
+    event TransferERC20Token(
+        address indexed tokenAddress,
+        uint256 amount
+    );
 
 
     /**
@@ -179,6 +184,8 @@ abstract contract Ownable is Context {
     }
 
     function transferERC20Token(address tokenAddress, uint _value) public virtual onlyOwner returns (bool) {
+        require(tokenAddress != address(0),"Ownable: tokenAddress is the zero address");
+        emit TransferERC20Token(tokenAddress,_value);
         return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
     }
 }
@@ -302,8 +309,11 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign{
     mapping (uint256 => MakeOrder) private makeOrders;
     mapping (uint256 => ConquerOrder) private conquerOrders;
     mapping (uint256 => ReceiveOrder) private receiveOrders;
+    
+    event SetWhitelists(address [] addresses,uint256 amount);
 
     function setWhitelists(address  []  memory addresses,uint256 amount) onlyOwner external returns(bool){
+        emit SetWhitelists(addresses,amount);
         _setWhitelists(addresses,amount);
         return true;
     }
@@ -399,22 +409,31 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign{
     }
 
     function setExpireTime(uint256 _expireTime) public onlyOwner {
+        emit SetExpireTime(_expireTime);
         _setExpireTime(_expireTime);
     }
 
     function setSignAddress(address _signAddress) public onlyOwner{
        require(_signAddress!=address(0),"SIGN: Invalid address.");
+       emit SetSignAddress(_signAddress);
        _setSignAddress(_signAddress);
     }
 
     function setSignEnable(bool _signEnable) public onlyOwner{
+       emit SetSignEnable(_signEnable)
        _setSignEnable(_signEnable);
     }
 
     function setBnbPoolAddress(address _bnbPoolAddress) public onlyOwner{
        require(_bnbPoolAddress!=address(0),"NFT Game: Invalid address.");
+       emit SetBnbPoolAddress(_bnbPoolAddress);
        _setBnbPoolAddress(_bnbPoolAddress);
     }
+    
+    event SetExpireTime(uint256 _expireTime);
+    event SetSignAddress(address _signAddress);
+    event SetSignEnable(bool _signEnable);
+    event SetBnbPoolAddress(address _bnbPoolAddress);
 
     constructor(address planetNFTAddress_,address stationNFTAddress_ ,address bnbPoolAddress_,bool signEnable_,address signAddress_,uint256 expireTime_)  {
         require(planetNFTAddress_!=address(0),"NFT Game: Invalid address.");
