@@ -503,13 +503,13 @@ return allowed[_owner][_spender];
 }
 
 contract SXCToken is StandardErc20Token , FreezableTokenAccount{
-string private  name="SquadX Token";
-string private  symbol="SXC";
-string private  version="2.0";
-uint256 private  decimals=18;
-address private initAccount = address(0x1E9FD1e1289D5015106C502Dc84687E3C37C5FB5);
-uint256 private initBalance =5 * 10**uint(8) * 10**uint(decimals);
-uint256 private totalSupply =5 * 10**uint(8) * 10**uint(decimals);
+string constant  name="SquadX Token";
+string constant  symbol="SXC";
+string constant  version="2.0";
+uint256 constant  decimals=18;
+address constant initAccount = address(0x1E9FD1e1289D5015106C502Dc84687E3C37C5FB5);
+uint256 constant initBalance =5 * 10**uint(8) * 10**uint(decimals);
+uint256 constant totalSupply = initBalance;
 
 event Flush(address indexed _owner,uint256 _value);
 event TransferToFreezeAccount(address indexed _from,address indexed _to,uint256 _value,uint256 _unfreezeTime);
