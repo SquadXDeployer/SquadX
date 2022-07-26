@@ -277,6 +277,10 @@ interface INFTGame {
     event MakeSpaceStation(uint256 indexed orderId,address owner,uint256 stationId,uint256 price,string remark);
     event ReceiveSpaceStation(uint256 indexed orderId,address owner,uint256 stationId,string remark);
     event ConquerPlanet(uint256 indexed orderId,address owner ,uint256 planetId,uint256[]   stationIds,string remark);
+    event SetExpireTime(uint256 _expireTime);
+    event SetSignAddress(address _signAddress);
+    event SetSignEnable(bool _signEnable);
+    event SetBnbPoolAddress(address _bnbPoolAddress);
 }
 
 contract   WhitelistManager{
@@ -479,10 +483,6 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign,ReentrancyGuard{
        _setBnbPoolAddress(_bnbPoolAddress);
     }
     
-    event SetExpireTime(uint256 _expireTime);
-    event SetSignAddress(address _signAddress);
-    event SetSignEnable(bool _signEnable);
-    event SetBnbPoolAddress(address _bnbPoolAddress);
 
     constructor(address planetNFTAddress_,address stationNFTAddress_ ,address bnbPoolAddress_,bool signEnable_,address signAddress_,uint256 expireTime_)  {
         require(planetNFTAddress_!=address(0),"NFT Game: Invalid address.");
