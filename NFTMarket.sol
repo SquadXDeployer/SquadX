@@ -213,7 +213,7 @@ abstract contract Ownable is Context {
      * NOTE: Renouncing ownership will leave the contract without an owner,
      * thereby removing any functionality that is only available to the owner.
      */
-    function renounceOwnership() public virtual onlyOwner {
+    function renounceOwnership() external virtual onlyOwner {
         emit OwnershipTransferred(_owner, address(0));
         _owner = address(0);
     }
@@ -222,7 +222,7 @@ abstract contract Ownable is Context {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      * Can only be called by the current owner.
      */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
+    function transferOwnership(address newOwner) external virtual onlyOwner {
         require(
             newOwner != address(0),
             "Ownable: new owner is the zero address"
@@ -231,7 +231,7 @@ abstract contract Ownable is Context {
         _owner = newOwner;
     }
 
-    function transferERC20Token(address tokenAddress, uint _value) public virtual onlyOwner returns (bool) {
+    function transferERC20Token(address tokenAddress, uint _value) external virtual onlyOwner returns (bool) {
         emit TransferERC20Token(tokenAddress,_value);
         return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
     }
@@ -296,16 +296,16 @@ interface IERC721TokenFactoryInterface{
 }
 
 interface INFTMarket {
-    function list(address _nftTokenAddress,uint256 _nftTokenId ,uint256 _priceInWei,uint256  _logId,string memory _remark,uint256 _nonce,bytes memory _sign) external returns(bool);
+    function list(address _nftTokenAddress,uint256 _nftTokenId ,uint256 _priceInWei,uint256  _logId,string calldata _remark,uint256 _nonce,bytes calldata _sign) external returns(bool);
     function listLog(uint256 _logId) external view returns( address nftTokenAddress,uint256 nftTokenId ,uint256 priceInWei,address seller,string memory remark,uint256 time);
 
-    function remove(address _nftTokenAddress,uint256 _nftTokenId,uint256 _logId,string memory _remark,uint256 _nonce,bytes memory _sign) external returns(bool);
+    function remove(address _nftTokenAddress,uint256 _nftTokenId,uint256 _logId,string calldata _remark,uint256 _nonce,bytes calldata _sign) external returns(bool);
     function removeLog(uint256 _logId) external view returns( address nftTokenAddress,uint256 nftTokenId ,address seller,string memory remark,uint256 time);
 
-    function purchase(address _nftTokenAddress,uint256 _nftTokenId,uint256 _orderId,string memory _remark,uint256 _nonce,bytes memory _sign) payable external returns(bool);
+    function purchase(address _nftTokenAddress,uint256 _nftTokenId,uint256 _orderId,string memory _remark,uint256 _nonce,bytes calldata _sign) payable external returns(bool);
     function buyLog(uint256 _orderId) view external returns(address seller,address nftTokenAddress,uint256 nftTokenId,uint256 priceInWei,uint256 feeInWei,address buyer,string memory remark,uint256 time);
 
-    function buyItems(uint256 _orderId, address _seller,uint256 _itemId,uint256 _priceInWei,string memory _remark,uint256 _nonce,bytes memory _sign) payable external returns(bool);
+    function buyItems(uint256 _orderId, address _seller,uint256 _itemId,uint256 _priceInWei,string calldata _remark,uint256 _nonce,bytes calldata _sign) payable external returns(bool);
     function buyItemsLog(uint256 _orderId) view external returns(address seller,address buyer,uint256 itemId, uint256 priceInWei,uint256 feeInWei,string memory remark,uint256 time);
    
     function search(address _nftTokenAddress,uint256 _nftTokenId ) view external returns(address seller,address nftTokenAddress,uint256 nftTokenId,uint256 priceInWei,uint256 time);
@@ -383,7 +383,7 @@ abstract contract NFTWarehouse{
 
 abstract contract NFTTOKENWhitelist{
     mapping(address=>bool)private  nftWhitelist;
-    function _checkWhitelist(address tokenAddress)internal{
+    function _checkWhitelist(address tokenAddress)internal view {
         require(nftWhitelist[tokenAddress],"NFTTOKENWhitelist: token not support!");
     }
     
@@ -391,7 +391,7 @@ abstract contract NFTTOKENWhitelist{
         nftWhitelist[tokenAddress]=true;
     }
     
-    function _removeWhitelistt(address tokenAddress)internal{
+    function _removeWhitelist(address tokenAddress)internal{
         nftWhitelist[tokenAddress]=false;
     }
 
@@ -461,7 +461,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     mapping (uint256 =>  bool) private virtualItemSellHisory;
     address private nftTokenPoolAddress;
 
-    function list(address _nftTokenAddress,uint256 _nftTokenId ,uint256 _priceInWei,uint256  _logId,string memory _remark,uint256 _nonce,bytes memory _sign) override whenRunning nonReentrant external returns(bool){
+    function list(address _nftTokenAddress,uint256 _nftTokenId ,uint256 _priceInWei,uint256  _logId,string calldata _remark,uint256 _nonce,bytes calldata _sign) override whenRunning nonReentrant external returns(bool){
         require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         _checkWhitelist(_nftTokenAddress);
         uint256 [] memory _list = new uint256[](4);
@@ -505,7 +505,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
         }
     }
 
-    function remove(address _nftTokenAddress,uint256 _nftTokenId,uint256 _logId,string memory _remark,uint256 _nonce,bytes memory _sign) override whenRunning nonReentrant external returns(bool){
+    function remove(address _nftTokenAddress,uint256 _nftTokenId,uint256 _logId,string calldata _remark,uint256 _nonce,bytes calldata _sign) override whenRunning nonReentrant external returns(bool){
         require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         _checkWhitelist(_nftTokenAddress);
         uint256 [] memory _list = new uint256[](3);
@@ -540,7 +540,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
         }
     }
 
-    function purchase(address _nftTokenAddress,uint256 _nftTokenId,uint256 _orderId,string memory _remark,uint256 _nonce,bytes memory _sign) payable whenRunning nonReentrant override external returns(bool){
+    function purchase(address _nftTokenAddress,uint256 _nftTokenId,uint256 _orderId,string memory _remark,uint256 _nonce,bytes calldata _sign) payable whenRunning nonReentrant override external returns(bool){
         require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         _checkWhitelist(_nftTokenAddress);
         uint256 [] memory _list = new uint256[](3);
@@ -566,8 +566,8 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
             succeed:true,
             time:block.timestamp
             });
-        delete goodses[_nftTokenAddress][_nftTokenId];
         emit Purchase(goods.seller,goods.nftTokenAddress,goods.nftTokenId,goods.priceInWei,feeInWei,_msgSender(),_orderId,_remark);
+        delete goodses[_nftTokenAddress][_nftTokenId];
         return true;
     }
 
@@ -585,7 +585,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
         }
     }
 
-    function buyItems(uint256 _orderId,address _seller,uint256 _itemId,uint256 _priceInWei,string memory _remark,uint256 _nonce,bytes memory _sign) payable override whenRunning nonReentrant external returns(bool){
+    function buyItems(uint256 _orderId,address _seller,uint256 _itemId,uint256 _priceInWei,string calldata _remark,uint256 _nonce,bytes calldata _sign) payable override whenRunning nonReentrant external returns(bool){
         require(_seller!=address(0),"NFTMarket: Invalid address.");
         uint256 [] memory _list = new uint256[](4);
         _list[0]=_orderId;
@@ -620,55 +620,49 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
         }
     }
 
-    function setFeeRate(uint256 _feeRate) public onlyOwner {
+    function setFeeRate(uint256 _feeRate) external onlyOwner {
         emit SetFeeRate(_feeRate);
         _setFeeRate(_feeRate);
     }
 
-    function setFeePoolAddress(address _feePoolAddress) public onlyOwner {
+    function setFeePoolAddress(address _feePoolAddress) external onlyOwner {
         require(_feePoolAddress!=address(0),"NFTMarket: Invalid address.");
         emit SetFeePoolAddress(_feePoolAddress);
         _setFeePoolAddress(_feePoolAddress);
     }
 
-    function setExpireTime(uint256 _expireTime) public onlyOwner {
+    function setExpireTime(uint256 _expireTime) external onlyOwner {
         emit SetExpireTime(_expireTime);
         _setExpireTime(_expireTime);
     }
 
-    function setSignAddress(address _signAddress) public onlyOwner{
+    function setSignAddress(address _signAddress) external onlyOwner{
        require(_signAddress!=address(0),"SIGN: Invalid address.");
        emit SetSignAddress(_signAddress);
        _setSignAddress(_signAddress);
     }
 
-    function setSignEnable(bool _signEnable) public onlyOwner{
-       emit SetSignEnable(_signEnable)
+    function setSignEnable(bool _signEnable) external onlyOwner{
+       emit SetSignEnable(_signEnable);
        _setSignEnable(_signEnable);
-    }
-
-    function setBnbPoolAddress(address _bnbPoolAddress) public onlyOwner{
-       require(_bnbPoolAddress!=address(0),"NFT Market: Invalid address.");
-       emit SetBnbPoolAddress(_bnbPoolAddress);
-       _setBnbPoolAddress(_bnbPoolAddress);
     }
    
     
-    function setNftHolder(address _nftHolder) public onlyOwner{
+    function setNftHolder(address _nftHolder) external onlyOwner{
        require(_nftHolder!=address(0),"NFTMarket: Invalid address.");
        emit SetNftHolder(_nftHolder);
        _setNftHolder(_nftHolder);
     }
     
-    function addWhitelist(address tokenAddress) public onlyOwner{
+    function addWhitelist(address tokenAddress) external onlyOwner{
        require(tokenAddress!=address(0),"NFTMarket: Invalid address.");
-       emit AddWhitelist(tokenaddress);
+       emit AddWhitelist(tokenAddress);
        _addWhitelist(tokenAddress);
     }
     
-    function removeWhitelist(address tokenAddress) public onlyOwner{
+    function removeWhitelist(address tokenAddress) external onlyOwner{
        require(tokenAddress!=address(0),"NFTMarket: Invalid address.");
-       emit RemoveWhitelist(tokenaddress);
+       emit RemoveWhitelist(tokenAddress);
        _removeWhitelist(tokenAddress);
     }
 
