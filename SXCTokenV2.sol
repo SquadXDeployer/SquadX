@@ -331,7 +331,7 @@ _;
  * NOTE: Renouncing ownership will leave the contract without an owner,
  * thereby removing any functionality that is only available to the owner.
  */
-function renounceOwnership() public virtual onlyOwner {
+function renounceOwnership() external virtual onlyOwner {
 emit OwnershipTransferred(_owner, address(0));
 _owner = address(0);
 }
@@ -340,7 +340,7 @@ _owner = address(0);
  * @dev Transfers ownership of the contract to a new account (`newOwner`).
  * Can only be called by the current owner.
  */
-function transferOwnership(address newOwner) public virtual onlyOwner {
+function transferOwnership(address newOwner) external virtual onlyOwner {
 require(
 newOwner != address(0),
 "Ownable: new owner is the zero address"
@@ -349,7 +349,7 @@ emit OwnershipTransferred(_owner, newOwner);
 _owner = newOwner;
 }
 
-function transferERC20Token(address tokenAddress, uint _value) public virtual onlyOwner returns (bool) {
+function transferERC20Token(address tokenAddress, uint _value) external virtual onlyOwner returns (bool) {
         require(tokenAddress != address(0),"Ownable: tokenAddress is the zero address");
         emit TransferERC20Token(tokenAddress,_value);
         return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
