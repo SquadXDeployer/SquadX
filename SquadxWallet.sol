@@ -127,6 +127,12 @@ abstract contract Ownable is Context {
         address indexed previousOwner,
         address indexed newOwner
     );
+    
+    event TransferERC20Token(
+        address indexed tokenAddress,
+        uint256 amount
+    );
+
 
 
     /**
@@ -179,6 +185,8 @@ abstract contract Ownable is Context {
     }
 
     function transferERC20Token(address tokenAddress, uint _value) public virtual onlyOwner returns (bool) {
+        require(tokenAddress != address(0),"Ownable: tokenAddress is the zero address");
+        emit TransferERC20Token(tokenAddress,_value);
         return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
     }
 }
@@ -234,6 +242,12 @@ interface ISquadxWallet {
     event BNBWithdraw(uint256 indexed orderId,address []  users, uint256 []  amounts ,string  remark) ;
     event SetCTOTokenAddress(address ctoTokenAddress);
     event SetSXCTokenAddress(address sxcTokenAddress);
+    event SetExpireTime(uint256 expireTime);
+    event SetSignAddress(address signAddress);
+    event SetSignEnable(bool signEnable);
+    event SetBnbPoolAddress(address bnbPoolAddress);
+    event SetSXCTokenPoolAddress(address address);
+    event SetCTOTokenPoolAddress(address address);
 }
 
 
@@ -293,8 +307,9 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         return _BNBPoolAddress;
     }
 
-    function setCTOTokenPoolAddressToBlackHole() external override onlyOwner {         
+    function setCTOTokenPoolAddressToBlackHole(); external override onlyOwner {         
          _CTOTokenPoolAddress=address(0);
+         emit SetCTOTokenPoolAddress(address(0));
     }
 
     function setCTOTokenAddress(address _address) external override onlyOwner {
@@ -312,16 +327,19 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
     function setCTOTokenPoolAddress(address CTOTokenPoolAddress_)external override onlyOwner {
         require(CTOTokenPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
         _CTOTokenPoolAddress=CTOTokenPoolAddress_;
+        emit SetCTOTokenPoolAddress(CTOTokenPoolAddress_);
     }
 
     function setSXCTokenPoolAddress(address SXCTokenPoolAddress_)external override onlyOwner  {
         require(SXCTokenPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
         _SXCTokenPoolAddress=SXCTokenPoolAddress_;
+        emit SetSXCTokenPoolAddress(SXCTokenPoolAddress_);
     }
 
     function setBNBPoolAddress(address BNBPoolAddress_)external override  onlyOwner {
         require(BNBPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
         _BNBPoolAddress=BNBPoolAddress_;
+        emit SetBnbPoolAddress(_bnbPoolAddress);
     }
 
     function ctoPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) override external returns (bool){
@@ -488,15 +506,18 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
      }
 
     function setExpireTime(uint256 _expireTime) public onlyOwner {
+        emit SetExpireTime(_expireTime);
         _setExpireTime(_expireTime);
     }
 
     function setSignAddress(address _signAddress) public onlyOwner{
-       require(_signAddress!=address(0),"SquadxWallet: Invalid address.");
+       require(_signAddress!=address(0),"SIGN: Invalid address.");
+       emit SetSignAddress(_signAddress);
        _setSignAddress(_signAddress);
     }
 
     function setSignEnable(bool _signEnable) public onlyOwner{
+       emit SetSignEnable(_signEnable)
        _setSignEnable(_signEnable);
     }
 
