@@ -594,7 +594,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
         _list[3]=_nonce;       
         _check(_list,_seller,_msgSender(),_nonce,_sign);
 
-        require(!virtualItemSellHisory[_itemId],"NFTMarket:  item not found!");
+        require(virtualItemSellHisory[_itemId],"NFTMarket:  item not found!");
         require(!virtualOrders[_orderId].succeed,"NFTMarket:  Order already exists");
         uint256 feeInWei =  _payment(_priceInWei,_seller);
         virtualOrders[_orderId] = VirtualGoodOrder(
