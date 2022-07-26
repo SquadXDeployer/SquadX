@@ -166,7 +166,7 @@ abstract contract Ownable is Context {
      * NOTE: Renouncing ownership will leave the contract without an owner,
      * thereby removing any functionality that is only available to the owner.
      */
-    function renounceOwnership() public virtual onlyOwner {
+    function renounceOwnership() external virtual onlyOwner {
         emit OwnershipTransferred(_owner, address(0));
         _owner = address(0);
     }
@@ -175,7 +175,7 @@ abstract contract Ownable is Context {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      * Can only be called by the current owner.
      */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
+    function transferOwnership(address newOwner) external virtual onlyOwner {
         require(
             newOwner != address(0),
             "Ownable: new owner is the zero address"
@@ -184,7 +184,7 @@ abstract contract Ownable is Context {
         _owner = newOwner;
     }
 
-    function transferERC20Token(address tokenAddress, uint _value) public virtual onlyOwner returns (bool) {
+    function transferERC20Token(address tokenAddress, uint _value) external virtual onlyOwner returns (bool) {
         require(tokenAddress != address(0),"Ownable: tokenAddress is the zero address");
         emit TransferERC20Token(tokenAddress,_value);
         return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
@@ -217,17 +217,17 @@ interface ISquadxWallet {
     function setSXCTokenPoolAddress(address _sxcTokenPoolAddress) external ;
     function setBNBPoolAddress(address _bnbTokenPoolAddress) external ;
 
-    function ctoPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) external returns(bool);
-    function sxcPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) external returns(bool);
-    function bnbPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) payable external returns(bool);
+    function ctoPay(uint256 _orderId,uint256 _price ,string calldata _remark,uint256 _nonce,bytes calldata _sign) external returns(bool);
+    function sxcPay(uint256 _orderId,uint256 _price ,string calldata _remark,uint256 _nonce,bytes calldata _sign) external returns(bool);
+    function bnbPay(uint256 _orderId,uint256 _price ,string calldata _remark,uint256 _nonce,bytes calldata _sign) payable external returns(bool);
     
     function getCTOPayOrder(uint256 _orderId) external view returns (address payer,uint256 amount,uint256 time,string memory remark);
     function getSXCPayOrder(uint256 _orderId) external view returns (address payer,uint256 amount,uint256 time,string memory remark);
     function getBNBPayOrder(uint256 _orderId) external view returns (address payer,uint256 amount,uint256 time,string memory remark);
 
-    function ctoWithdraw(uint256 _orderId, address [] memory _users, uint256 [] memory _amounts ,string memory _remark) external returns(bool);
-    function sxcWithdraw(uint256 _orderId,address [] memory _users, uint256 [] memory _amounts ,string memory _remark) external returns(bool);
-    function bnbWithdraw(uint256 _orderId,address [] memory _users, uint256 [] memory _amounts ,string memory _remark) external returns(bool);
+    function ctoWithdraw(uint256 _orderId, address [] calldata _users, uint256 [] calldata _amounts ,string calldata _remark) external returns(bool);
+    function sxcWithdraw(uint256 _orderId,address [] calldata _users, uint256 [] calldata _amounts ,string calldata _remark) external returns(bool);
+    function bnbWithdraw(uint256 _orderId,address [] calldata _users, uint256 [] calldata _amounts ,string calldata _remark) external returns(bool);
 
     function getCTOWithDrawOrder(uint256 _orderId) external view returns (uint256 time,address [] memory users, uint256 [] memory amounts,string memory remark);
     function getSXCWithDrawOrder(uint256 _orderId) external view returns (uint256 time,address [] memory users, uint256 [] memory amounts,string memory remark);
@@ -245,9 +245,9 @@ interface ISquadxWallet {
     event SetExpireTime(uint256 expireTime);
     event SetSignAddress(address signAddress);
     event SetSignEnable(bool signEnable);
-    event SetBnbPoolAddress(address bnbPoolAddress);
-    event SetSXCTokenPoolAddress(address address);
-    event SetCTOTokenPoolAddress(address address);
+    event SetBNBPoolAddress(address bnbPoolAddress);
+    event SetSXCTokenPoolAddress(address tokenPoolAddress);
+    event SetCTOTokenPoolAddress(address tokenPoolAddress);
 }
 
 
@@ -307,7 +307,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         return _BNBPoolAddress;
     }
 
-    function setCTOTokenPoolAddressToBlackHole(); external override onlyOwner {         
+    function setCTOTokenPoolAddressToBlackHole()external override onlyOwner {         
          _CTOTokenPoolAddress=address(0);
          emit SetCTOTokenPoolAddress(address(0));
     }
@@ -339,10 +339,10 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
     function setBNBPoolAddress(address BNBPoolAddress_)external override  onlyOwner {
         require(BNBPoolAddress_!=address(0),"SquadxWallet: Invalid address.");
         _BNBPoolAddress=BNBPoolAddress_;
-        emit SetBnbPoolAddress(_bnbPoolAddress);
+        emit SetBNBPoolAddress(BNBPoolAddress_);
     }
 
-    function ctoPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) override external returns (bool){
+    function ctoPay(uint256 _orderId,uint256 _price ,string calldata _remark,uint256 _nonce,bytes calldata _sign) override external returns (bool){
         require(_price>0,"SquadxWallet: price should be greater than 0");
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_orderId;
@@ -355,7 +355,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         return true;
     }
 
-    function sxcPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) override external  returns (bool){
+    function sxcPay(uint256 _orderId,uint256 _price ,string calldata _remark,uint256 _nonce,bytes calldata _sign) override external  returns (bool){
         require(_price>0,"SquadxWallet: price should be greater than 0");
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_orderId;
@@ -368,7 +368,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         return true;
     }
 
-    function _ERC20Pay(address _tokenAddress,address _tokenPoolAddress,address _buyer,uint256 _price ,string memory _remark)internal returns (PayOrder memory order){
+    function _ERC20Pay(address _tokenAddress,address _tokenPoolAddress,address _buyer,uint256 _price ,string calldata _remark)internal returns (PayOrder memory order){
        assert(IERC20TokenInterface(_tokenAddress).transferFrom(_buyer,_tokenPoolAddress, _price));
        order = _buildPayOrder(_buyer,_price,_remark);
     }
@@ -383,7 +383,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         });
     }
 
-    function bnbPay(uint256 _orderId,uint256 _price ,string memory _remark,uint256 _nonce,bytes memory _sign) payable  override external  returns (bool){
+    function bnbPay(uint256 _orderId,uint256 _price ,string calldata _remark,uint256 _nonce,bytes calldata _sign) payable  override external  returns (bool){
         require(_price>0,"SquadxWallet: price should be greater than 0");
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_orderId;
@@ -420,21 +420,21 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         }
     }
 
-    function ctoWithdraw(uint256 _orderId, address [] memory _users, uint256 [] memory _amounts ,string memory _remark) external override onlyOwner returns(bool){   
+    function ctoWithdraw(uint256 _orderId, address [] calldata _users, uint256 [] calldata _amounts ,string calldata _remark) external override onlyOwner returns(bool){   
         WithdrawOrder storage order = ctoWithdrawOrders[_orderId];
         _ERC20Withdraw(order,_CTOTokenAddress,_CTOTokenPoolAddress,_users,_amounts,_remark);
         emit CTOWithdraw(_orderId,_users,_amounts,_remark);
         return true;
     }
 
-    function sxcWithdraw(uint256 _orderId, address [] memory _users, uint256 [] memory _amounts ,string memory _remark) external override onlyOwner returns(bool){       
+    function sxcWithdraw(uint256 _orderId, address [] calldata _users, uint256 [] calldata _amounts ,string calldata _remark) external override onlyOwner returns(bool){       
         WithdrawOrder storage order = sxcWithdrawOrders[_orderId];
         _ERC20Withdraw(order,_SXCTokenAddress,_SXCTokenPoolAddress,_users,_amounts,_remark);
         emit SXCWithdraw(_orderId,_users,_amounts,_remark);
         return true;
     }
     
-    function _ERC20Withdraw(WithdrawOrder storage _order,address _tokenAddress,address _tokenPoolAddress,address [] memory _users, uint256 [] memory _amounts ,string memory _remark) internal returns (bool){
+    function _ERC20Withdraw(WithdrawOrder storage _order,address _tokenAddress,address _tokenPoolAddress,address [] calldata _users, uint256 [] calldata _amounts ,string calldata _remark) internal returns (bool){
         require(!_order.succeed,"SquadxWallet : Order already exists");       
         require(_users.length == _amounts.length,"SquadxWallet : users.length must equal amounts.length");
         _order.time = block.timestamp;
@@ -455,7 +455,7 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         return true; 
     }
 
-    function bnbWithdraw(uint256 _orderId, address [] memory _users, uint256 [] memory _amounts ,string memory _remark) external override onlyOwner returns(bool){       
+    function bnbWithdraw(uint256 _orderId, address [] calldata _users, uint256 [] calldata _amounts ,string calldata _remark) external override onlyOwner returns(bool){       
         WithdrawOrder storage order = bnbWithdrawOrders[_orderId];
         require(!order.succeed,"SquadxWallet : Order already exists");       
         require(_users.length == _amounts.length,"SquadxWallet : users.length must equal amounts.length");       
@@ -508,19 +508,19 @@ contract SquadxWallet is ISquadxWallet,Sign, Ownable{
         }
      }
 
-    function setExpireTime(uint256 _expireTime) public onlyOwner {
+    function setExpireTime(uint256 _expireTime) external onlyOwner {
         emit SetExpireTime(_expireTime);
         _setExpireTime(_expireTime);
     }
 
-    function setSignAddress(address _signAddress) public onlyOwner{
+    function setSignAddress(address _signAddress) external onlyOwner{
        require(_signAddress!=address(0),"SIGN: Invalid address.");
        emit SetSignAddress(_signAddress);
        _setSignAddress(_signAddress);
     }
 
-    function setSignEnable(bool _signEnable) public onlyOwner{
-       emit SetSignEnable(_signEnable)
+    function setSignEnable(bool _signEnable) external onlyOwner{
+       emit SetSignEnable(_signEnable);
        _setSignEnable(_signEnable);
     }
 
