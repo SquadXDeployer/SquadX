@@ -214,7 +214,7 @@ abstract contract Ownable is Context {
      * NOTE: Renouncing ownership will leave the contract without an owner,
      * thereby removing any functionality that is only available to the owner.
      */
-    function renounceOwnership() public virtual onlyOwner {
+    function renounceOwnership() external virtual onlyOwner {
         emit OwnershipTransferred(_owner, address(0));
         _owner = address(0);
     }
@@ -223,7 +223,7 @@ abstract contract Ownable is Context {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      * Can only be called by the current owner.
      */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
+    function transferOwnership(address newOwner) external virtual onlyOwner {
         require(
             newOwner != address(0),
             "Ownable: new owner is the zero address"
@@ -232,7 +232,7 @@ abstract contract Ownable is Context {
         _owner = newOwner;
     }
 
-    function transferERC20Token(address tokenAddress, uint _value) public virtual onlyOwner returns (bool) {
+    function transferERC20Token(address tokenAddress, uint _value) external virtual onlyOwner returns (bool) {
         require(tokenAddress != address(0),"Ownable: tokenAddress is the zero address");
         emit TransferERC20Token(tokenAddress,_value);
         return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
@@ -266,9 +266,9 @@ interface IERC721TokenFactoryInterface{
 }
 
 interface INFTGame {
-    function makeSpaceStation(uint256  _orderId, uint256 _stationId ,uint256 _price,string memory _remark,uint256 _nonce,bytes memory _sign) payable external returns(bool);
-    function conquerPlanet(uint256 _orderId,uint256 _planetId,uint256[] memory  _stationIds ,string memory _remark,uint256 _nonce,bytes memory _sign) external returns(bool);   
-    function receiveSpaceStation(uint256  _orderId,uint256 _stationId ,string memory _remark,uint256 _nonce,bytes memory _sign)  external returns(bool);
+    function makeSpaceStation(uint256  _orderId, uint256 _stationId ,uint256 _price,string calldata _remark,uint256 _nonce,bytes calldata _sign) payable external returns(bool);
+    function conquerPlanet(uint256 _orderId,uint256 _planetId,uint256[] calldata  _stationIds ,string calldata _remark,uint256 _nonce,bytes calldata _sign) external returns(bool);   
+    function receiveSpaceStation(uint256  _orderId,uint256 _stationId ,string calldata _remark,uint256 _nonce,bytes calldata _sign)  external returns(bool);
 
     function getMakeSpaceStationOrder(uint256  _orderId)view   external returns(address owner,uint256 stationId,uint256 price,uint256 time,string memory remark);
     function getConquerOrder(uint256 _orderId) view external returns (address owner,uint256 planetId, uint256 []  memory  stationIds,uint256 time,string memory remark);
@@ -282,7 +282,7 @@ interface INFTGame {
 contract   WhitelistManager{
     mapping (address => uint256) private whitelist;
 
-    function _setWhitelists(address  []  memory addresses,uint256 amount) internal{
+    function _setWhitelists(address  []  calldata addresses,uint256 amount) internal{
         require(addresses.length >0,"WhitelistManager: addresses can not empty.");
         for(uint32 i=0;i<addresses.length;i++){
             whitelist[addresses[i]]=amount;
@@ -361,13 +361,13 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign,ReentrancyGuard{
     
     event SetWhitelists(address [] addresses,uint256 amount);
 
-    function setWhitelists(address  []  memory addresses,uint256 amount) onlyOwner external returns(bool){
+    function setWhitelists(address  []  calldata addresses,uint256 amount) onlyOwner external returns(bool){
         emit SetWhitelists(addresses,amount);
         _setWhitelists(addresses,amount);
         return true;
     }
 
-    function makeSpaceStation(uint256  _orderId, uint256 _stationId ,uint256 _price,string memory _remark,uint256 _nonce,bytes memory _sign) payable external override nonReentrant  returns(bool){
+    function makeSpaceStation(uint256  _orderId, uint256 _stationId ,uint256 _price,string calldata _remark,uint256 _nonce,bytes calldata _sign) payable external override nonReentrant  returns(bool){
         uint256 [] memory _list = new uint256[](4);
         _list[0]=_orderId;
         _list[1]=_stationId;
@@ -389,7 +389,7 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign,ReentrancyGuard{
         return true;
     }
 
-    function conquerPlanet(uint256 _orderId,uint256 _planetId,uint256[] memory  _stationIds ,string memory _remark,uint256 _nonce,bytes memory _sign) external override nonReentrant returns(bool){
+    function conquerPlanet(uint256 _orderId,uint256 _planetId,uint256[] calldata  _stationIds ,string calldata _remark,uint256 _nonce,bytes calldata _sign) external override nonReentrant returns(bool){
         require(_stationIds.length >0,"NFTGame: _stationIds can not empty.");
         uint256 [] memory _list = new uint256[](3+_stationIds.length );
         _list[0]=_orderId;
@@ -417,7 +417,7 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign,ReentrancyGuard{
         return true;
     }
 
-    function receiveSpaceStation(uint256  _orderId,uint256 _stationId ,string memory _remark,uint256 _nonce,bytes memory _sign) external override nonReentrant returns(bool){
+    function receiveSpaceStation(uint256  _orderId,uint256 _stationId ,string calldata _remark,uint256 _nonce,bytes calldata _sign) external override nonReentrant returns(bool){
         uint256 [] memory _list = new uint256[](3);
         _list[0]=_orderId;
         _list[1]=_stationId;     
@@ -457,23 +457,23 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign,ReentrancyGuard{
         }
     }
 
-    function setExpireTime(uint256 _expireTime) public onlyOwner {
+    function setExpireTime(uint256 _expireTime) external onlyOwner {
         emit SetExpireTime(_expireTime);
         _setExpireTime(_expireTime);
     }
 
-    function setSignAddress(address _signAddress) public onlyOwner{
+    function setSignAddress(address _signAddress) external onlyOwner{
        require(_signAddress!=address(0),"SIGN: Invalid address.");
        emit SetSignAddress(_signAddress);
        _setSignAddress(_signAddress);
     }
 
-    function setSignEnable(bool _signEnable) public onlyOwner{
-       emit SetSignEnable(_signEnable)
+    function setSignEnable(bool _signEnable) external onlyOwner{
+       emit SetSignEnable(_signEnable);
        _setSignEnable(_signEnable);
     }
 
-    function setBnbPoolAddress(address _bnbPoolAddress) public onlyOwner{
+    function setBnbPoolAddress(address _bnbPoolAddress) external onlyOwner{
        require(_bnbPoolAddress!=address(0),"NFT Game: Invalid address.");
        emit SetBnbPoolAddress(_bnbPoolAddress);
        _setBnbPoolAddress(_bnbPoolAddress);
