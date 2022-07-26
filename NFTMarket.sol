@@ -127,6 +127,11 @@ abstract contract Ownable is Context {
         address indexed previousOwner,
         address indexed newOwner
     );
+    
+    event TransferERC20Token(
+        address indexed tokenAddress,
+        uint256 amount
+    );
 
 
     /**
@@ -179,6 +184,7 @@ abstract contract Ownable is Context {
     }
 
     function transferERC20Token(address tokenAddress, uint _value) public virtual onlyOwner returns (bool) {
+        emit TransferERC20Token(tokenAddress,_value);
         return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
     }
 }
@@ -260,6 +266,12 @@ interface INFTMarket {
     event  Remove(address _nftTokenAddress,uint256 _nftTokenId ,address _seller,uint256 indexed   _logId );
     event  Purchase(address _seller,address _nftTokenAddress,uint256 _nftTokenId ,uint256 _priceInWei,uint256 _feeInWei,address _buyer,uint256 indexed   _orderId,string  _remark) ;
     event  BuyItems(address _seller,uint256 _priceInWei,uint256 _feeInWei,uint256 _itemId,address _buyer,uint256 indexed   _orderId,string  _remark) ;
+    event SetExpireTime(uint256 _expireTime);
+    event SetSignAddress(address _signAddress);
+    event SetSignEnable(bool _signEnable);
+    event SetNftHolder(address _nftHolder);
+    event SetFeePoolAddress(address _feePoolAddress);
+    event SetFeeRate(uint256 _feeRate);
 }
 
 
@@ -541,29 +553,42 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     }
 
     function setFeeRate(uint256 _feeRate) public onlyOwner {
+        emit SetFeeRate(_feeRate);
         _setFeeRate(_feeRate);
     }
 
     function setFeePoolAddress(address _feePoolAddress) public onlyOwner {
         require(_feePoolAddress!=address(0),"NFTMarket: Invalid address.");
+        emit SetFeePoolAddress(_feePoolAddress);
         _setFeePoolAddress(_feePoolAddress);
     }
 
     function setExpireTime(uint256 _expireTime) public onlyOwner {
+        emit SetExpireTime(_expireTime);
         _setExpireTime(_expireTime);
     }
 
     function setSignAddress(address _signAddress) public onlyOwner{
-        require(_signAddress!=address(0),"NFTMarket: Invalid address.");
+       require(_signAddress!=address(0),"SIGN: Invalid address.");
+       emit SetSignAddress(_signAddress);
        _setSignAddress(_signAddress);
     }
 
     function setSignEnable(bool _signEnable) public onlyOwner{
+       emit SetSignEnable(_signEnable)
        _setSignEnable(_signEnable);
     }
 
+    function setBnbPoolAddress(address _bnbPoolAddress) public onlyOwner{
+       require(_bnbPoolAddress!=address(0),"NFT Market: Invalid address.");
+       emit SetBnbPoolAddress(_bnbPoolAddress);
+       _setBnbPoolAddress(_bnbPoolAddress);
+    }
+   
+    
     function setNftHolder(address _nftHolder) public onlyOwner{
        require(_nftHolder!=address(0),"NFTMarket: Invalid address.");
+       emit SetNftHolder(_nftHolder);
        _setNftHolder(_nftHolder);
     }
 
