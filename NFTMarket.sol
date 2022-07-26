@@ -5,6 +5,54 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+abstract contract ReentrancyGuard {
+    // Booleans are more expensive than uint256 or any type that takes up a full
+    // word because each write operation emits an extra SLOAD to first read the
+    // slot's contents, replace the bits taken up by the boolean, and then write
+    // back. This is the compiler's defense against contract upgrades and
+    // pointer aliasing, and it cannot be disabled.
+
+    // The values being non-zero value makes deployment a bit more expensive,
+    // but in exchange the refund on every call to nonReentrant will be lower in
+    // amount. Since refunds are capped to a percentage of the total
+    // transaction's gas, it is best to keep them low in cases like this one, to
+    // increase the likelihood of the full refund coming into effect.
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+
+    uint256 private _status;
+
+    constructor() {
+        _status = _NOT_ENTERED;
+    }
+
+    /**
+     * @dev Prevents a contract from calling itself, directly or indirectly.
+     * Calling a `nonReentrant` function from another `nonReentrant`
+     * function is not supported. It is possible to prevent this from happening
+     * by making the `nonReentrant` function external, and making it call a
+     * `private` function that does the actual work.
+     */
+    modifier nonReentrant() {
+        _nonReentrantBefore();
+        _;
+        _nonReentrantAfter();
+    }
+
+    function _nonReentrantBefore() private {
+        // On the first call to nonReentrant, _notEntered will be true
+        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+
+        // Any calls to nonReentrant after this point will fail
+        _status = _ENTERED;
+    }
+
+    function _nonReentrantAfter() private {
+        // By storing the original value once again, a refund is triggered (see
+        // https://eips.ethereum.org/EIPS/eip-2200)
+        _status = _NOT_ENTERED;
+    }
+}
 
 contract Sign {
 
@@ -403,7 +451,7 @@ contract NFTMarketDomain{
 
 }
 
-contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,Sign,NFTTOKENWhitelist{
+contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,Sign,NFTTOKENWhitelist,ReentrancyGuard{
 
     mapping (uint256 =>  GoodsPutLog) private putLogs;
     mapping (uint256 =>  GoodsPullLog) private pullLogs;
@@ -413,7 +461,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
     mapping (uint256 =>  bool) private virtualItemSellHisory;
     address private nftTokenPoolAddress;
 
-    function list(address _nftTokenAddress,uint256 _nftTokenId ,uint256 _priceInWei,uint256  _logId,string memory _remark,uint256 _nonce,bytes memory _sign) override whenRunning external returns(bool){
+    function list(address _nftTokenAddress,uint256 _nftTokenId ,uint256 _priceInWei,uint256  _logId,string memory _remark,uint256 _nonce,bytes memory _sign) override whenRunning nonReentrant external returns(bool){
         require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         _checkWhitelist(_nftTokenAddress);
         uint256 [] memory _list = new uint256[](4);
@@ -457,7 +505,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
         }
     }
 
-    function remove(address _nftTokenAddress,uint256 _nftTokenId,uint256 _logId,string memory _remark,uint256 _nonce,bytes memory _sign) override external returns(bool){
+    function remove(address _nftTokenAddress,uint256 _nftTokenId,uint256 _logId,string memory _remark,uint256 _nonce,bytes memory _sign) override whenRunning nonReentrant external returns(bool){
         require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         _checkWhitelist(_nftTokenAddress);
         uint256 [] memory _list = new uint256[](3);
@@ -492,7 +540,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
         }
     }
 
-    function purchase(address _nftTokenAddress,uint256 _nftTokenId,uint256 _orderId,string memory _remark,uint256 _nonce,bytes memory _sign) payable whenRunning override external returns(bool){
+    function purchase(address _nftTokenAddress,uint256 _nftTokenId,uint256 _orderId,string memory _remark,uint256 _nonce,bytes memory _sign) payable whenRunning nonReentrant override external returns(bool){
         require(_nftTokenAddress!=address(0),"NFTMarket: Invalid address.");
         _checkWhitelist(_nftTokenAddress);
         uint256 [] memory _list = new uint256[](3);
@@ -537,7 +585,7 @@ contract  NFTMarket is INFTMarket,NFTMarketDomain,NFTWarehouse,Payment,Service,S
         }
     }
 
-    function buyItems(uint256 _orderId,address _seller,uint256 _itemId,uint256 _priceInWei,string memory _remark,uint256 _nonce,bytes memory _sign) payable override whenRunning external returns(bool){
+    function buyItems(uint256 _orderId,address _seller,uint256 _itemId,uint256 _priceInWei,string memory _remark,uint256 _nonce,bytes memory _sign) payable override whenRunning nonReentrant external returns(bool){
         require(_seller!=address(0),"NFTMarket: Invalid address.");
         uint256 [] memory _list = new uint256[](4);
         _list[0]=_orderId;
