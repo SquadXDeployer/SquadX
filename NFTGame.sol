@@ -403,6 +403,7 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign{
     }
 
     function setSignAddress(address _signAddress) public onlyOwner{
+       require(_signAddress!=address(0),"SIGN: Invalid address.");
        _setSignAddress(_signAddress);
     }
 
@@ -411,10 +412,15 @@ contract  NFTGame is INFTGame,Payment,Domains,Ownable,Sign{
     }
 
     function setBnbPoolAddress(address _bnbPoolAddress) public onlyOwner{
+       require(_bnbPoolAddress!=address(0),"NFT Game: Invalid address.");
        _setBnbPoolAddress(_bnbPoolAddress);
     }
 
     constructor(address planetNFTAddress_,address stationNFTAddress_ ,address bnbPoolAddress_,bool signEnable_,address signAddress_,uint256 expireTime_)  {
+        require(planetNFTAddress_!=address(0),"NFT Game: Invalid address.");
+        require(stationNFTAddress_!=address(0),"NFT Game: Invalid address.");
+        require(bnbPoolAddress_!=address(0),"NFT Game: Invalid address.");
+        require(signAddress_!=address(0),"NFT Game: Invalid address.");
         _setBnbPoolAddress(bnbPoolAddress_);
         _stationNFTAddress = stationNFTAddress_;
         _planetNFTAddress = planetNFTAddress_;
