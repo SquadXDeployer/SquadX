@@ -441,7 +441,7 @@ function totalSupply() external view override returns(uint256){
 return _totalSupply ;
 }
 
-function transfer(address _to, uint256 _value) external override returns (bool success) {
+function transfer(address _to, uint256 _value) external override returns (bool) {
 require(balances[_msgSender()] >= _value,"ERC20: balance is not enough");
 bool subOk;
 uint256 subResult;
@@ -459,7 +459,7 @@ emit Transfer(msg.sender, _to, _value);
 return true;
 }
 
-function transferFrom(address _from, address _to, uint256 _value) external override  returns (bool success) {
+function transferFrom(address _from, address _to, uint256 _value) external override  returns (bool) {
 require (balances[_from] >= _value && allowed[_from][_msgSender()] >= _value,"ERC20: allowed balance is not enough") ;
 
 bool subOk;
@@ -480,17 +480,17 @@ emit Transfer(_from, _to, _value);
 return true;
 }
 
-function balanceOf(address _owner) external virtual override  view returns (uint256 balance) {
+function balanceOf(address _owner) external virtual override  view returns (uint256) {
 return balances[_owner] ;
 }
 
-function approve(address _spender, uint256 _value) external override  returns (bool success) {
+function approve(address _spender, uint256 _value) external override  returns (bool) {
 allowed[_msgSender()][_spender] = _value;
 emit Approval(_msgSender(), _spender, _value);
 return true;
 }
 
-function allowance(address _owner, address _spender) external override  view returns (uint256 remaining) {
+function allowance(address _owner, address _spender) external override  view returns (uint256) {
 return allowed[_owner][_spender];
 }
 
@@ -508,7 +508,7 @@ uint256 private totalSupply =500000000 * 10**uint(decimals);
 event Flush(address indexed _owner,uint256 _value);
 event TransferToFreezeAccount(address indexed _from,address indexed _to,uint256 _value,uint256 _unfreezeTime);
 
-function flush()  external returns (bool sueeccd){
+function flush()  external returns (bool){
     uint256 totalUnFreezeBalance;
     FreezeBalanceDetail[]  storage details = freezeBalanceDetails[_msgSender()];
      for(uint256 i = 0; i< details.length; i++){
@@ -525,7 +525,7 @@ function flush()  external returns (bool sueeccd){
     return true;
 }
 
- function transferWithFreeze(address _to, uint256 _value,uint256 _unfreezeTime) external returns (bool succeed){
+ function transferWithFreeze(address _to, uint256 _value,uint256 _unfreezeTime) external returns (bool){
     require(_to!=address(0),"ERC20: Invalid address.");
     require(balances[_msgSender()] >= _value,"ERC20: balance is not enough");
     require(_value>0,"ERC20: value must be greater than 0");
@@ -548,7 +548,7 @@ function flush()  external returns (bool sueeccd){
     return true;
  }
 
-function balanceOf(address _owner) external override  view returns (uint256 balance) {
+function balanceOf(address _owner) external override  view returns (uint256) {
 return balances[_owner] + freezeBalanceOf(_owner);
 }
 
