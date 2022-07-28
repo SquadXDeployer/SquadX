@@ -348,10 +348,14 @@ emit OwnershipTransferred(_owner, newOwner);
 _owner = newOwner;
 }
 
-function transferERC20Token(address tokenAddress, uint _value) external virtual onlyOwner returns (bool) {
+function transferERC20Token(address tokenAddress, uint _value) external virtual onlyOwner {
+        require(_value>0,"Ownable: value must gt zero");
         require(tokenAddress != address(0),"Ownable: tokenAddress is the zero address");
         emit TransferERC20Token(tokenAddress,_value);
-        return IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
+        uint256 oldBalance = IERC20TokenInterface(tokenAddress).balanceOf(_owner);
+        IERC20TokenInterface(tokenAddress).transfer(_owner, _value);
+        uint256 newBalance = IERC20TokenInterface(tokenAddress).balanceOf(_owner);
+        assert(newBalance==oldBalance+_value);
 }
 
 }
